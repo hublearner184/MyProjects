@@ -2,6 +2,7 @@
 int main()
 {
 	int var = 8;
-	void* ptr = &var;
+	int* ptr = &var;
+	*ptr = 10;//Ö¸ÕëµÄÄæÓÃ
 	std::cin.get();
 }
