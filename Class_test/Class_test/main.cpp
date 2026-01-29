@@ -1,6 +1,25 @@
 #include <iostream>
-int s_Variable = 10;
+class Singleton
+{
+private:
+	static Singleton* s_Instance;
+public:
+	static Singleton& Get() { return *s_Instance; }
 
+	void Hello(){}
+};
+/*int s_Variable = 10;
+
+struct Entity
+{
+	static int x, y;
+	void Print()
+	{
+		std::cout << x << "," << y << std::endl;
+	}
+};
+int Entity::x;
+int Entity::y;
 class Log
 {
 public:
@@ -31,14 +50,26 @@ public:
 			std::cout << "[Info]:" << message << std::endl;
 	}
 };
+*/
+Singleton* Singleton::s_Instance = nullptr;
 
 int main()
 {
-	Log log;
+	/*Log log;
 	log.SetLevel(log.LogLevelInfo);
 	log.Warn("Hello!");
 	log.Error("Hello!");
 	log.Info("Hello!");
 	std::cout << "s_Variable" << std::endl;
+	Entity e;
+	e.x = 2;
+	e.y = 3;
+
+	Entity e1;
+	e1.x = 5;
+	e1.y = 8;
+	e.Print();
+	e1.Print();*/
+	Singleton::Get().Hello();
 	std::cin.get();
 }
