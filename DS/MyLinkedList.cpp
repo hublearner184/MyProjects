@@ -1,7 +1,7 @@
 #include <iostream>
 #include <stdexcept>
+#include <string>
 using namespace std;
-
 
 template<typename E>
 class MyLinkedList{
@@ -12,7 +12,7 @@ class MyLinkedList{
         Node(E value):val(value),next(nullptr),prev(nullptr){}
     };
     Node* head;
-    Node* tail;
+    Node* tail;                                                                                         
     int size;
 public:
     MyLinkedList(){
@@ -146,7 +146,7 @@ private:
     Node* getNode(int index){
         checkElementIndex(index);
         Node* p = head->next;
-        for(int i = 0; i < index; i++){
+        for(int i = 0; i < index - 1 ; i++){
             p = p->next;
         }
         return p;
