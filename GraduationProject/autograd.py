@@ -1,5 +1,9 @@
 import torch
-
+import torch.nn as nn
+import numpy as np
+import matplotlib.pyplot as plt
+import os
+os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 #============================requires_grad=============================
 flag = False
 if flag:
@@ -111,4 +115,28 @@ for iteration in range(1000):
 
         mask = y_pred.ge(0.5).float().squeeze() #以0.5的阈值进行分类
         correct = (mask == train_y).sum() #计算正确预测的样本个数
+        acc = correct.item() / train_y.size(0) #
+
+        plt.scatter(x0.data.numpy()[:,0],x0.data.numpy()[:,1],c='r',label = 'class 0')
+        plt.scatter(x1.data.numpy()[:,0],x1.data.numpy()[:,1],c='r',label = 'class 1')
+        
+        w0,w1 = lr_net.features.weight[0]
+        w0,w1 = float(w0.item()),float(w1.item())
+        plot_b = float(lr_net.features.bias[0].item())
+        plot_x = np.arange(-6,6,0.1)
+        plot_y = (-w0 * plot_x - plot_b) / w1
+
+        plt.xlim(-5,7)
+        plt.xlim(-7,7)
+        plt.plot(plot_x,plot_y)
+
+        plt.text(-5,5,'Loss = %.4f' % loss.data.numpy(),fontdict = {'size': 20,'color': 'red'})
+        plt.title("Iteration:{}\nw0:{:.2f}w1:{:.2f}b:{:.2f}accuracy:{:.2%}".format(iteration,w0,w1,plot_b,acc))
+        plt.legend()
+
+        plt.show()
+        plt.pause(0.5)
+
+        if acc > 0.9:
+            break
         
