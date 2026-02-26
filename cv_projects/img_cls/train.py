@@ -1,15 +1,17 @@
 #训练花朵分类模型脚本
 import torch
+import time
+import os
 from torchvision import transforms,models
 from flower_dataset import FlowerDataset
 from torch.utils.data import DataLoader
 from torch import nn,optim
-
+from model_trainer import ModelTrainer
 if __name__  == "__main__":
 
 #参数配置
-    train_dir = "" 
-    valid_dir = ""
+    train_dir = r"D:\data\flowers_data\train"
+    valid_dir = r"D:\data\flowers_data\valid"
     batch_size = 64
     max_epoch = 40
     num_cls = 102
@@ -18,8 +20,11 @@ if __name__  == "__main__":
     weight_decay = 1e-4
     milestones = [25, 35]
     decay_factor = 0.1
+    log_interval = 10 #iteration
     norm_mean,norm_std = [0.485,0.456,0.406] , [0.229,0.224,0.225]
-
+    time_str = time.strftime("%Y%m%d")
+    output_dir = f"outputs/{time_str}"
+    os.makedirs(output_dir,exist_ok = True)
     #实例化dataset(train valid)
     train_transform = transforms.Compose([
         transforms.Resize(256),#(256,256)区别 256：短边保持256 1920*1080[1080->256 1920*1080/256]
@@ -35,7 +40,7 @@ if __name__  == "__main__":
         transforms.ToTensor(),
         transforms.Normalize(norm_mean,norm_std)
     ])
-    valid_dataset = FlowerDataset(data_dir = valid_dir,transform = valid_transform)
+    valid_dataset = FlowerDataset(img_dir = valid_dir,transform = valid_transform)
     #组装dataloader
     train_loader = DataLoader(train_dataset, batch_size, shuffle = True,num_workers = 2)
     valid_loader = DataLoader(valid_dataset, batch_size, shuffle = False,num_workers = 2)
@@ -57,41 +62,40 @@ if __name__  == "__main__":
 
 #loop
 
-for epoch in range(max_epoch):
-    """一次epoch的训练
-       按batch形式取数据
-       前向传播
-       计算Loss
-       反向传播计算梯度
-       更新权重
-       统计Loss 准确率
-    """
-    loss_train,acc_train,conf_mat_train,path_error_train = ModelTrainer.train_one_epoch(
-        train_loader,model,
-        loss_f = loss_fn,
-        optimizer = optimizer,
-        scheduler = lr_scheduler,
-        epoch_idx = epoch,
-        device = device,
-        log_interval = log_interval,
-        max_epoch = max_epoch,
-    )
-    """
-        一次epoch验证
-        按Batch形式取数据
+    for epoch in range(max_epoch):
+        """一次epoch的训练
+        按batch形式取数据
         前向传播
         计算Loss
-        统计Loss  准确率
-    """
-    loss_valid,acc_valid,conf_mat_valid,path_error_valid = ModelTrainer.valid_one_epoch(
-        valid_loader,
-        model,loss_fn,
-        device = device,
-    )
-    #保存模型
-    checkpoint = {
-        "model": model.state_dict(),
-        "epoch": epoch,
-    }
-    torch.save(checkpoint,f"{output_dir}/model.pth")
-    
+        反向传播计算梯度
+        更新权重
+        统计Loss 准确率
+        """
+        loss_train,acc_train,conf_mat_train,path_error_train = ModelTrainer.train_one_epoch(
+            train_loader,model,
+            loss_f = loss_fn,
+            optimizer = optimizer,
+            scheduler = lr_scheduler,
+            epoch_idx = epoch,
+            device = device,
+            log_interval = log_interval,
+            max_epoch = max_epoch,
+        )
+        """
+            一次epoch验证
+            按Batch形式取数据
+            前向传播
+            计算Loss
+            统计Loss  准确率
+        """
+        loss_valid,acc_valid,conf_mat_valid,path_error_valid = ModelTrainer.valid_one_epoch(
+            valid_loader,
+            model,loss_fn,
+            device = device,
+        )
+        #保存模型
+        checkpoint = {
+            "model": model.state_dict(),
+            "epoch": epoch,
+        }
+        torch.save(checkpoint,f"{output_dir}/model.pth")

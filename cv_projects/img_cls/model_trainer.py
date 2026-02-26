@@ -3,7 +3,7 @@ import numpy as np
 from collections import Counter
 
 
-class Model_Trainer:
+class ModelTrainer:
 
     @staticmethod
     def train_one_epoch(data_loader,model,loss_f,optimizer,scheduler,epoch_idx,device,log_interval,max_epoch):
