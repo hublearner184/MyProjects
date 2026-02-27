@@ -62,7 +62,7 @@ class ModelTrainer:
 
             with torch.no_grad():
                 outputs = model(inputs)
-            loss = loss_f(outputs.cpu(),labels.cpu())
+            loss = loss_f(outputs,labels)
 
             _, predicted = torch.max(outputs.data, 1)
             for j in range(len(labels)):

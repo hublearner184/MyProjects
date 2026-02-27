@@ -30,6 +30,10 @@ if __name__ == "__main__":
     copy_file(train_list,target_dir,"train")
     copy_file(valid_list,target_dir,"valid")
     
+"""
+    train dataset: copy 6551 images to D:\data\flowers_data\train
+    valid dataset: copy 1638 images to D:\data\flowers_data\valid
+"""
 
 
 
